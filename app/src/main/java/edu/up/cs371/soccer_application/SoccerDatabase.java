@@ -18,6 +18,7 @@ import java.util.*;
  */
 public class SoccerDatabase implements SoccerDB {
 
+    HashMap<String, SoccerPlayer> players = new HashMap<String, SoccerPlayer>();
     /**
      * add a player
      *
@@ -26,7 +27,16 @@ public class SoccerDatabase implements SoccerDB {
     @Override
 	public boolean addPlayer(String firstName, String lastName,
 			int uniformNumber, String teamName) {
-        return false;
+
+    	String key = firstName + " ## " + lastName;
+
+    	if (players.containsKey(key)) {
+    		return false;
+	    }
+
+	    players.put(key, new SoccerPlayer(firstName, lastName, uniformNumber, teamName));
+		return true;
+
 	}
 
     /**
@@ -36,6 +46,11 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean removePlayer(String firstName, String lastName) {
+    	String key = firstName + " ## " + lastName;
+    	if(players.containsKey(key)) {
+    		players.remove(key);
+    		return true;
+	    }
         return false;
     }
 
@@ -46,7 +61,8 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
 	public SoccerPlayer getPlayer(String firstName, String lastName) {
-        return null;
+    	String key = firstName + " ## " + lastName;
+    	return players.get(key);
     }
 
     /**
@@ -56,6 +72,11 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpGoals(String firstName, String lastName) {
+    	String key = firstName + " ## " + lastName;
+    	if(players.containsKey(key)) {
+		    (players.get(key)).bumpGoals();
+		    return true;
+	    }
         return false;
     }
 
@@ -127,7 +148,22 @@ public class SoccerDatabase implements SoccerDB {
     @Override
     // report number of players on a given team (or all players, if null)
 	public int numPlayers(String teamName) {
-        return -1;
+    	if(teamName == null) {
+    		return players.size();
+	    }
+	    int count = 0;
+
+	    Iterator it = players.entrySet().iterator();
+	    while (it.hasNext()) {
+		    Map.Entry pair = (Map.Entry)it.next();
+		    SoccerPlayer p = (SoccerPlayer) pair.getValue();
+			if(p.getTeamName().equals(teamName)) {
+				count++;
+			}
+		    it.remove(); // avoids a ConcurrentModificationException
+	    }
+
+	    return count;
 	}
 
     /**
@@ -138,7 +174,39 @@ public class SoccerDatabase implements SoccerDB {
 	// get the nTH player
 	@Override
     public SoccerPlayer playerNum(int idx, String teamName) {
-        return null;
+		SoccerPlayer s = null;
+		if(teamName == null) {
+			Iterator it = players.entrySet().iterator();
+			int i = 0;
+			do  {
+				if(it.hasNext()) {
+					Map.Entry pair = (Map.Entry) it.next();
+					s = players.get(pair.getKey());
+					it.remove(); // avoids a ConcurrentModificationException
+					i++;
+				} else {
+					break;
+				}
+			} while (i < idx);
+			return s;
+		} else {
+
+			SoccerPlayer p1 = null;
+			Iterator it = players.entrySet().iterator();
+			int i = 0;
+			do {
+				Map.Entry pair = (Map.Entry) it.next();
+
+				SoccerPlayer p = players.get(pair.getKey());
+
+				if(p.getTeamName().equals(teamName)) {
+					p1 = p;
+				}
+				i++;
+				it.remove(); // avoids a ConcurrentModificationException
+			} while (it.hasNext() && i < idx);
+			return p1;
+		}
     }
 
     /**
