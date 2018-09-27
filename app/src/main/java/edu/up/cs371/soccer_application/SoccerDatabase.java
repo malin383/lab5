@@ -89,6 +89,12 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpAssists(String firstName, String lastName) {
+
+        String key = firstName + " ## " + lastName;
+        if(players.containsKey(key)) {
+            (players.get(key)).bumpAssists();
+            return true;
+        }
         return false;
     }
 
@@ -99,26 +105,40 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpShots(String firstName, String lastName) {
+        /**
+         * increment a player's saves
+         *
+         * @see SoccerDB#bumpSaves(String, String)
+         */
+        String key = firstName + " ## " + lastName;
+        if (players.containsKey(key)) {
+            (players.get(key)).bumpShots();
+            return true;
+        }
         return false;
     }
-
-    /**
-     * increment a player's saves
-     *
-     * @see SoccerDB#bumpSaves(String, String)
-     */
     @Override
     public boolean bumpSaves(String firstName, String lastName) {
-        return false;
-    }
 
     /**
      * increment a player's fouls
      *
      * @see SoccerDB#bumpFouls(String, String)
      */
+        String key = firstName + " ## " + lastName;
+        if(players.containsKey(key)) {
+            (players.get(key)).bumpSaves();
+            return true;
+        }
+        return false;
+    }
     @Override
     public boolean bumpFouls(String firstName, String lastName) {
+        String key = firstName + " ## " + lastName;
+        if(players.containsKey(key)) {
+            (players.get(key)).bumpFouls();
+            return true;
+        }
         return false;
     }
 
@@ -129,6 +149,11 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpYellowCards(String firstName, String lastName) {
+        String key = firstName + " ## " + lastName;
+        if(players.containsKey(key)) {
+            (players.get(key)).bumpYellowCards();
+            return true;
+        }
         return false;
     }
 
@@ -139,6 +164,11 @@ public class SoccerDatabase implements SoccerDB {
      */
     @Override
     public boolean bumpRedCards(String firstName, String lastName) {
+        String key = firstName + " ## " + lastName;
+        if(players.containsKey(key)) {
+            (players.get(key)).bumpRedCards();
+            return true;
+        }
         return false;
     }
 
@@ -215,7 +245,28 @@ public class SoccerDatabase implements SoccerDB {
 	// write data to file
     @Override
 	public boolean writeData(File file) {
-        return false;
+        PrintWriter pw;
+        try {
+            pw = new PrintWriter(file);
+        }catch(Exception e){
+            return false;
+        }
+        for(int i = 0; i < players.size(); i++) {
+            pw.println(logString("First Name: " + playerList.get(i).getFirstName()));
+            pw.println(logString("Last Name: " + playerList.get(i).getLastName()));
+            pw.println(logString("Team: " + playerList.get(i).getTeamName()));
+            pw.println(logString("Uniform: " + playerList.get(i).getUniform()));
+            pw.println(logString("Goals: " + playerList.get(i).getGoals()));
+            pw.println(logString("Assists: " + playerList.get(i).getAssists()));
+            pw.println(logString("Shots: " + playerList.get(i).getShots()));
+            pw.println(logString("Saves: " + playerList.get(i).getSaves()));
+            pw.println(logString("Fouls: " + playerList.get(i).getFouls()));
+            pw.println(logString("Yellow Cards: " + playerList.get(i).getYellowCards()));
+            pw.println(logString("Red Cards: " + playerList.get(i).getRedCards()));
+        }
+        pw.close();
+        return true;
+
 	}
 
     /**
