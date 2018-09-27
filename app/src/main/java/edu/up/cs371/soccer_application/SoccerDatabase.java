@@ -19,6 +19,7 @@ import java.util.*;
 public class SoccerDatabase implements SoccerDB {
 
     HashMap<String, SoccerPlayer> players = new HashMap<String, SoccerPlayer>();
+    ArrayList<SoccerPlayer> playerList = new ArrayList<>();
     /**
      * add a player
      *
@@ -35,6 +36,7 @@ public class SoccerDatabase implements SoccerDB {
 	    }
 
 	    players.put(key, new SoccerPlayer(firstName, lastName, uniformNumber, teamName));
+    	playerList.add(new SoccerPlayer(firstName, lastName, uniformNumber, teamName));
 		return true;
 
 	}
@@ -174,39 +176,25 @@ public class SoccerDatabase implements SoccerDB {
 	// get the nTH player
 	@Override
     public SoccerPlayer playerNum(int idx, String teamName) {
-		SoccerPlayer s = null;
-		if(teamName == null) {
-			Iterator it = players.entrySet().iterator();
-			int i = 0;
-			do  {
-				if(it.hasNext()) {
-					Map.Entry pair = (Map.Entry) it.next();
-					s = players.get(pair.getKey());
-					it.remove(); // avoids a ConcurrentModificationException
-					i++;
-				} else {
-					break;
-				}
-			} while (i < idx);
-			return s;
-		} else {
 
-			SoccerPlayer p1 = null;
-			Iterator it = players.entrySet().iterator();
-			int i = 0;
-			do {
-				Map.Entry pair = (Map.Entry) it.next();
+	    int teamCount = 0;
 
-				SoccerPlayer p = players.get(pair.getKey());
+	    if(idx < playerList.size() - 1) {
+            for (int i = 0; i < playerList.size(); i++) {
 
-				if(p.getTeamName().equals(teamName)) {
-					p1 = p;
-				}
-				i++;
-				it.remove(); // avoids a ConcurrentModificationException
-			} while (it.hasNext() && i < idx);
-			return p1;
-		}
+                if (teamName == null) {
+                    return playerList.get(idx);
+                }
+                if (playerList.get(i).getTeamName() == teamName) {
+                    if (teamCount == idx) {
+                        return playerList.get(i);
+                    } else {
+                        teamCount++;
+                    }
+                }
+            }
+        }
+        return playerList.get(playerList.size() - 1);
     }
 
     /**
