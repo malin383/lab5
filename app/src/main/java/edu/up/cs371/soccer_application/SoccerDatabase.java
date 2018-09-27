@@ -162,7 +162,6 @@ public class SoccerDatabase implements SoccerDB {
 			if(p.getTeamName().equals(teamName)) {
 				count++;
 			}
-		    it.remove(); // avoids a ConcurrentModificationException
 	    }
 
 	    return count;
