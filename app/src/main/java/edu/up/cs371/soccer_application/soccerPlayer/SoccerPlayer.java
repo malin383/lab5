@@ -19,7 +19,7 @@ public class SoccerPlayer {
 	private int fouls; // fouls committed
 	private int saves; // saves made
 	private int yellowCards; // yellow cards shown
-	private int redCards; // red cards shown
+	private int redCards; // redred cards shown
 	private String teamName; // name of team
 	
 	/**
